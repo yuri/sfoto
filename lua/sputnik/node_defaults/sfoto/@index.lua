@@ -6,7 +6,7 @@ NODE.fields = [[
 content.activate = "lua"
 ]]
 NODE.actions = [[
-show="sfoto.show"
+show="sfoto.show_index"
 ]]
 
 NODE.child_defaults = [[

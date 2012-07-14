@@ -6,6 +6,7 @@ module(..., package.seeall)
 local ITEMS_PER_ROW = 5
 local imagegrid = require("sfoto.imagegrid")
 local wiki = require("sputnik.actions.wiki")
+local javascript = require("sfoto.javascript")
 require("sfoto")
 
 -----------------------------------------------------------------------------
@@ -241,7 +242,7 @@ end
 -----------------------------------------------------------------------------
 -- Handles the basic "show" request with caching.
 -----------------------------------------------------------------------------
-actions.show = function(node, request, sputnik)
+actions.show_index = function(node, request, sputnik)
    if sputnik.app_cache then
        --local tracker = sputnik.saci:get_node_info("sfoto_tracker")
        local key = node.id.."|"..request.query_string.."|"..(request.user or "Anon")
@@ -256,5 +257,6 @@ actions.show = function(node, request, sputnik)
    else
       node.inner_html = actions.show_index_content(node, request, sputnik)
    end
+   node:add_javascript_snippet(javascript.INDEX)
    return node.wrappers.default(node, request, sputnik)
 end
