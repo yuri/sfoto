@@ -9,7 +9,7 @@ NODE.content=[=========[
 ALBUM = [======[
 
 $if_has_hidden[[
-  <p><img src="$lock_icon_url"/> This album has $num_hidden hidden photos.</p><br/>
+  <p><img src="$lock_icon_url"/> This album has $num_hidden hidden items.</p><br/>
 ]]
 
 <table>
@@ -28,6 +28,9 @@ $if_has_hidden[[
 
 ]======]
 
+--BOLD_COLOR_1 = "#1B8B9A" -- a bold color used for the larger elements
+--BOLD_COLOR_2 = "#093D59" -- a bold color used for the smaller elements
+
 INDEX = [======[
 <style>
 .odd {
@@ -41,6 +44,9 @@ INDEX = [======[
 } 
 .date {
    font-size: 300%;
+   padding: 0 0 0 0.2em;
+   text-align: left;
+   font-family: 'Sputnik Header Web Font';
 }
 .blog {
    display: block;
