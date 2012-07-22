@@ -281,7 +281,7 @@ actions.show_index = function(node, request, sputnik)
       node.inner_html = actions.show_index_content(node, request, sputnik)
    end
    node:add_javascript_snippet(cosmo.f(javascript.INDEX){})
-   node:add_javascript_link("http://hitconsultants.com/dragscroll_scrollsync/dragscrollable.js")
+   node:add_javascript_link(sputnik:make_url("sfoto/dragscrollable.js"))
    node:add_css_snippet(cosmo.f(node.templates.CSS_FOR_INDEX){})
    return node.wrappers.default(node, request, sputnik)
 end
