@@ -6,6 +6,7 @@ NODE = {
 NODE.actions = [[
 show="sfoto.show_album"
 show_content='sfoto.show_album_content'
+show_for_viewer = "sfoto.show_album_for_js_viewer"
 ]]
 NODE.fields = [[
 content.activate = "lua"
@@ -24,4 +25,5 @@ deny(all_users, "edit")
 deny(all_users, "save")
 allow(Admin, "edit")
 allow(Admin, "save")
+allow(all_users, "show_for_viewer")
 ]]

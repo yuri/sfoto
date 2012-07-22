@@ -104,7 +104,8 @@ end
 -----------------------------------------------------------------------------
 -- Returns the HTML (without the wrapper) for displaying an album.
 -----------------------------------------------------------------------------
-actions.show_album_content = function(node, request, sputnik)
+actions.show_album_content = function(node, request, sputnik, options)
+   options = options or {}
    -- select viewable photos
    local user_access = sputnik.auth:get_metadata(request.user, "access")
    local photos, num_hidden = sfoto.visible_photos(node.content.photos,
@@ -112,18 +113,25 @@ actions.show_album_content = function(node, request, sputnik)
    -- attach URLs to them
    for i, photo in ipairs(photos) do
       photo.thumb = sfoto.photo_url(node.id.."/"..photo.id, "thumb")
+      photo.sized = sfoto.photo_url(node.id.."/"..photo.id, "sized")
+      photo.original = sfoto.photo_url(node.id.."/"..photo.id, "original")
    end
+   first_photo_url = sfoto.photo_url(node.id.."/"..photos[1].id, "sized")
    -- group into rows
-   local rows = sfoto.group(photos, "photos", ITEMS_PER_ROW)
+   local rows = sfoto.group(photos, "photos", options.items_per_row or ITEMS_PER_ROW)
 
    -- figure out if we need a title (for AHAH)
    local title = request.params.show_title
                  and "<h1>"..node.title.."</h1>\n\n" or ""
 
+   template = options.template or node.templates.ALBUM
+
    -- format the output
-   return title..cosmo.f(node.templates.ALBUM){
+   return title..cosmo.f(template){
                     album_url = sputnik:make_url(node.id),
+                    title = node.title,
                     rows = rows,
+                    first_photo_url = first_photo_url,
                     if_has_hidden = cosmo.c(num_hidden > 0) {
                        lock_icon_url = sputnik:make_url("sfoto/lock.png"),
                        num_hidden = num_hidden,
@@ -138,6 +146,18 @@ actions.show_album = function(node, request, sputnik)
    node.inner_html = actions.show_album_content(node, request, sputnik)
    return node.wrappers.default(node, request, sputnik)
 end
+
+-----------------------------------------------------------------------------
+-- Returns the HTML for displaying an album inside a JS popup.
+-----------------------------------------------------------------------------
+actions.show_album_for_js_viewer = function(node, request, sputnik)
+   local options = {
+      template=node.templates.ALBUM_FOR_VIEWER,
+      items_per_row = 1,
+   }
+   return actions.show_album_content(node, request, sputnik, options)
+end
+
 
 function get_visible_items_by_tag(sputnik, user, id, tag)
    local function make_key(tag)
@@ -161,6 +181,9 @@ function get_visible_items_by_tag(sputnik, user, id, tag)
    end
    return TAG_CACHE[make_key(tag)] or {}
 end
+
+
+
 
 function get_visible_nodes_lazily(sputnik, user, id)
    if not SFOTO_NODE_CACHE then
@@ -257,6 +280,8 @@ actions.show_index = function(node, request, sputnik)
    else
       node.inner_html = actions.show_index_content(node, request, sputnik)
    end
-   node:add_javascript_snippet(javascript.INDEX)
+   node:add_javascript_snippet(cosmo.f(javascript.INDEX){})
+   node:add_javascript_link("http://hitconsultants.com/dragscroll_scrollsync/dragscrollable.js")
+   node:add_css_snippet(cosmo.f(node.templates.CSS_FOR_INDEX){})
    return node.wrappers.default(node, request, sputnik)
 end

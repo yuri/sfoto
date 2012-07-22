@@ -28,50 +28,53 @@ $if_has_hidden[[
 
 ]======]
 
+ALBUM_FOR_VIEWER = [======[
+  <div id="sfoto_popup_background">
+   <div id="sfoto_side_panel">
+     <h1 id="image_title">$title</h1>
+     $if_has_hidden[[<p><img src="$lock_icon_url"/> This album has $num_hidden hidden items.</p><br/>
+     ]]
+     
+     <ul id="sfoto_viewer_toolbar">
+       <li><a id="sfoto_viewer_toolbar_close" href="#">Close viewer</a></li>
+       <li><a id="sfoto_viewer_toolbar_permalink" href="#">Link</a></li>       
+       <li><a id="sfoto_viewer_toolbar_full_size" href="#">Full size</a></li>
+     </ul>
+   </div>
+   <div id="sfoto_popup_main_image">
+    <div id="sfoto_popup_main_image_cell">
+     <img src=""/>
+    </div>
+   </div>
+   <div id="sfoto_popup_thumbnail_scroll_pane">
+    <div id="sfoto_popup_thumbnail_strip">
+     <table>
+      <tr><td id="sfoto_popup_thumbnail_strip_buffer">Start</td></tr>
+      $rows[=[
+      <tr>
+       $photos[==[
+        <td class='sfoto_thumbnail_box'>
+         <div id="sfoto_thumbnail_$id" data-sized-url="$sized" data-full-size-url="$original" class="sfoto_thumbnail" href="$album_url/$id">
+          <img src='$thumb'/>
+         </div>
+        </td>
+       ]==]
+      </tr>
+      ]=]
+      <tr><td id="sfoto_popup_thumbnail_strip_buffer">End<br/><br/><br/><br/><br/><br/><br/></td></tr>
+     </table>
+    </div> <!-- #sfoto_popup_thumbnail_strip-->
+   </div> <!-- #sfoto_popup_thumbnail_scroll_pane -->
+  </div> <!-- #sfoto_popup_background -->
+]======]
+
 --BOLD_COLOR_1 = "#1B8B9A" -- a bold color used for the larger elements
 --BOLD_COLOR_2 = "#093D59" -- a bold color used for the smaller elements
 
 INDEX = [======[
-<style>
-.odd {
-   background: #999999;
-   border: none;
-}
-.even
-{
-   background: #cccccc;
-   border: none;
-} 
-.date {
-   font-size: 300%;
-   padding: 0 0 0 0.2em;
-   text-align: left;
-   font-family: 'Sputnik Header Web Font';
-}
-.blog {
-   display: block;
-   font-size: 120%;
-   border: 1px solid gray;
-   background: white;
-   padding: 3px;
-   min-height: 94px;
-   min-width: 150px;
-   text-decoration: none;
-}
-.blog:hover {
-   background: #ffd;
-}
 
-sfoto_blog_title {
-   style="margin-top: 0px; height: 50px;
-}
-table.sfoto_toolbar { border:none; margin: 0; padding: 0; }
-.sfoto_toolbar tr { margin: 0; padding: 0; }
-.sfoto_toolbar tr td { vertical-align: middle; border: none; color: gray; margin: 0; padding: 0; padding-right: .5em;    }
-.sfoto_toolbar tr td a {  color: white; text-decoration: none; }
-.sfoto_toolbar tr td a:hover {  color: yellow; }
-
-</style>
+<div id="sfoto_popup_scroll_pane">  
+</div> <!-- #sfoto_popup_scroll_pan -->
 
 <table>
  <tr>
@@ -93,13 +96,13 @@ table.sfoto_toolbar { border:none; margin: 0; padding: 0; }
     $items[===[
      <td class="$odd" style="min-width: 160px;">
       $if_blog[====[
-       <a class="blog" href="$url" onclick="showBlog('$row_id', '$url', '$content_url'); return false;">
+       <a class="blog" href="$url" class="sfoto_blog_link">
         <p class="sfoto_blog_title">$title </p>
         <center><img src="$blog_thumb"/></center>
        </a>
       ]====]
       $if_album[====[
-       <a href="$url" title="$title" onclick="showBlog('$row_id', '$url', '$content_url'); return false;"><img src="$thumbnail"/></a>
+       <a href="$url" title="$title" class="sfoto_album_link"><img src="$thumbnail"/></a>
        <br/>$title
       ]====]
      </td>
@@ -130,6 +133,185 @@ table.sfoto_toolbar { border:none; margin: 0; padding: 0; }
 </table>
 ]======]
 
+CSS_FOR_INDEX = [====[
+.odd {
+   background: #999999;
+   border: none;
+}
+.even
+{
+   background: #cccccc;
+   border: none;
+} 
+.date {
+   font-size: 300%;
+   padding: 0 0 0 0.2em;
+   text-align: left;                               
+   font-family: 'Sputnik Header Web Font';
+}
+.blog {
+   display: block;
+   font-size: 120%;
+   border: 1px solid gray;
+   background: white;
+   padding: 3px;
+   min-height: 94px;
+   min-width: 150px;
+   text-decoration: none;
+}
+.blog:hover {
+   background: #ffd;
+}
+
+.sfoto_blog_title {
+   margin-top: 0px; height: 50px;
+}
+table.sfoto_toolbar { border:none; margin: 0; padding: 0; }
+.sfoto_toolbar tr { margin: 0; padding: 0; }
+.sfoto_toolbar tr td { vertical-align: middle; border: none; color: gray; margin: 0; padding: 0; padding-right: .5em;    }
+.sfoto_toolbar tr td a {  color: white; text-decoration: none; }
+.sfoto_toolbar tr td a:hover {  color: yellow; }
+
+#sfoto_popup_scroll_pane {
+ width: 100%;
+ height: 100%;
+ position: fixed;
+ top: 0;
+ left: 0;
+ overflow: hidden; 
+ background: rgba(0,0,0,0.95);
+ z-index: 100000;
+ display: none;
+}
+
+#image_title {
+ color: white;
+ font-size: 14pt;
+ border-bottom: 1px solid gray;
+}
+
+#image_title_0 {
+-webkit-transform: rotate(-90deg); 
+-moz-transform: rotate(-90deg);	
+transform: rotate(-90deg);
+transform-origin: top left;  
+color: white;
+position: absolute;
+top: 365;
+height: 50px;
+width: 800px;
+left: -350px;
+text-align: right;
+//border: 1px solid orange;
+}
+
+#sfoto_popup_background {
+ //display: box;
+ padding: 10px;
+
+}
+
+#sfoto_popup_main_image {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ //width: 810px;
+ width: 100%;
+ //height: 810px;
+ height: 100%;
+ text-align: center;
+ display: table;
+ margin: 0;
+ padding: 0;
+}
+
+#sfoto_popup_main_image_cell {
+ vertical-align: middle;
+ display: table-cell;
+}
+
+#sfoto_popup_main_image_cell img {
+ border-radius: 10px;
+ vertical-align: middle;
+}
+
+#sfoto_popup_thumbnail_scroll_pane {
+ position: absolute;
+ top: 0px;
+ right: 0px;
+ overflow-y: hidden;
+ height: 100%;
+ width: 170px;
+ margin: 0;
+ padding: 0;
+ border-left: 1px solid gray;
+}
+
+#sfoto_side_panel {
+position: absolute;
+ top: 0px;
+ left: 0px;
+ overflow-y: hidden;
+ border-right: 1px solid gray;
+ height: 100%;
+ width: 170px;
+ margin: 0;
+ padding: 0px;
+ z-index: 1000000;
+}
+
+div#sfoto_popup_thumbnail_strip {
+ display: box;
+ height: 800px;
+ margin: 0;
+ padding: 0;
+ top: -200px;
+ opacity: 0.4;
+}
+
+div#sfoto_popup_thumbnail_strip_buffer {
+ height: 200px;
+ display: table-cell;
+ color: white;
+ text-align: center;
+ width: 100%;
+}
+
+td.sfoto_thumbnail_box {
+ vertical-align: middle;
+ text-align: center;
+ width: 100%;
+ height: 155px;
+ border: 1px solid gray;
+ margin: 2px;
+ background: black;
+ border-radius: 10px;
+}
+
+.sfoto_thumbnail_box img {
+ border: none;
+}
+.sfoto_thumbnail_box img.active {
+ border: 2px solid yellow;
+}
+
+#sfoto_viewer_toolbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#sfoto_viewer_toolbar > li > a {
+   display: block;
+   border: 1px solid white;
+   border-radius: 4px;
+   background: gray;
+   padding: 5px;
+   margin: 3px;
+   color: white;
+   text-decoration: none;
+}
+
+]====]
 
 SIMPLE_IMAGE_GRID = [====[
 <div width='100%' style="margin-top: 20px; margin-bottom:20px">
