@@ -32,14 +32,13 @@ ALBUM_FOR_VIEWER = [======[
   <div id="sfoto_popup_background">
    <div id="sfoto_side_panel">
      <h1 id="image_title">$title</h1>
-     $if_has_hidden[[<p><img src="$lock_icon_url"/> This album has $num_hidden hidden items.</p><br/>
-     ]]
-     
      <ul id="sfoto_viewer_toolbar">
        <li><a id="sfoto_viewer_toolbar_close" href="#">Close viewer</a></li>
        <li><a id="sfoto_viewer_toolbar_permalink" href="#">Link</a></li>       
        <li><a id="sfoto_viewer_toolbar_full_size" href="#">Full size</a></li>
      </ul>
+     $if_has_hidden[[<p><img src="$lock_icon_url"/> This album has $num_hidden hidden items.</p><br/>
+     ]]
    </div>
    <div id="sfoto_popup_main_image">
     <div id="sfoto_popup_main_image_cell">
@@ -208,7 +207,7 @@ text-align: right;
 #sfoto_popup_background {
  //display: box;
  padding: 10px;
-
+ color: #ddd;
 }
 
 #sfoto_popup_main_image {

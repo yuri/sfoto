@@ -116,7 +116,10 @@ actions.show_album_content = function(node, request, sputnik, options)
       photo.sized = sfoto.photo_url(node.id.."/"..photo.id, "sized")
       photo.original = sfoto.photo_url(node.id.."/"..photo.id, "original")
    end
-   first_photo_url = sfoto.photo_url(node.id.."/"..photos[1].id, "sized")
+   local first_photo_url = ""
+   if #photos > 0 then
+      first_photo_url = sfoto.photo_url(node.id.."/"..photos[1].id, "sized")
+   end
    -- group into rows
    local rows = sfoto.group(photos, "photos", options.items_per_row or ITEMS_PER_ROW)
 
