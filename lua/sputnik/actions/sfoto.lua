@@ -49,8 +49,8 @@ actions.show_photo_content = function(node, request, sputnik)
    if photos[this_photo+1] then next_photo = photos[this_photo+1].id end
 
    return cosmo.f(node.templates.SINGLE_PHOTO){
-             photo_url     = sfoto.photo_url(node.id),
-             original_size = sfoto.photo_url(node.id, "original"),
+             photo_url     = sfoto.photo_url(node.id, "sized", sputnik.config),
+             original_size = sfoto.photo_url(node.id, "original", sputnik.config),
              next_link     = sputnik:make_url(parent_id.."/"..next_photo),
              prev_link     = sputnik:make_url(parent_id.."/"..prev_photo),
              note          = link_notes[photos[this_photo+1]~=nil]
@@ -112,13 +112,13 @@ actions.show_album_content = function(node, request, sputnik, options)
                                                    request.user, sputnik)   
    -- attach URLs to them
    for i, photo in ipairs(photos) do
-      photo.thumb = sfoto.photo_url(node.id.."/"..photo.id, "thumb")
-      photo.sized = sfoto.photo_url(node.id.."/"..photo.id, "sized")
-      photo.original = sfoto.photo_url(node.id.."/"..photo.id, "original")
+      photo.thumb = sfoto.photo_url(node.id.."/"..photo.id, "thumb", sputnik.config)
+      photo.sized = sfoto.photo_url(node.id.."/"..photo.id, "sized", sputnik.config)
+      photo.original = sfoto.photo_url(node.id.."/"..photo.id, "original", sputnik.config)
    end
    local first_photo_url = ""
    if #photos > 0 then
-      first_photo_url = sfoto.photo_url(node.id.."/"..photos[1].id, "sized")
+      first_photo_url = sfoto.photo_url(node.id.."/"..photos[1].id, "sized", sputnik.config)
    end
    -- group into rows
    local rows = sfoto.group(photos, "photos", options.items_per_row or ITEMS_PER_ROW)

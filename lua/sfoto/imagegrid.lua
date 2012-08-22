@@ -87,7 +87,8 @@ function Gridder:flexgrid(image_code)
                top        = pixify(y),
                title      = photo.title or "",               
                photo_url  = sfoto.photo_url(parsed, 
-                                            photo.size>1 and string.format("%dx", photo.size) or "thumb"),
+                                            photo.size>1 and string.format("thumb%dx", photo.size) or "thumb",
+                                            self.sputnik.config),
                link       = self.sputnik:make_url("photos/"..parsed.year.."/"
                                                  ..parsed.month.."/"..parsed.date
                                                  .."/"..parsed.rest)
@@ -138,7 +139,7 @@ function Gridder:simplegrid(image_code)
       row.photos = row
       for j, photo in ipairs(row) do
          local parsed = sfoto.parse_id("photos/"..photo.id)
-         photo.photo_url = sfoto.photo_url(parsed, "thumb")
+         photo.photo_url = sfoto.photo_url(parsed, "thumb", self.sputnik.config)
          photo.link = self.sputnik:make_url("photos/"..parsed.year.."/"
                                             ..parsed.month.."/"..parsed.date
                                             .."/"..parsed.rest)

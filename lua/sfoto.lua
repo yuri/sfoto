@@ -10,6 +10,18 @@ require("md5")
 -----------------------------------------------------------------------------
 -- Given a string in a prefix/YYYY/MM/DD-xyz or prefix/YYYY-MM-DD-xyz format,
 -- returns "YYYY", "MM", "DD", and "xyz".
+--
+-- For example: "photos/2011/06/05/b-seville-alcazar/20110605_046_5615" would
+-- get parsed into:
+--
+--     {
+--        root  = "photos",
+--        year  = "2011",
+--        month = "06",
+--        date  = "05",
+--        rest  = "b-seville-alcazar/20110605_046_5615"
+--     }
+--
 -----------------------------------------------------------------------------
 function parse_id(id)
    local root_id = id:match("[^%/]*")
@@ -24,38 +36,49 @@ function parse_id(id)
 end
 
 -----------------------------------------------------------------------------
--- Maps ids to actual image URLs, assuming that the images are stored outside
+-- Maps ids to actual file URLs, assuming that the images are stored outside
 -- Sputnik.  "id" can be supplied as a string or already parsed into a table.
+--
+-- See parse_id() for the assumed structure of ids.
+--
+-- The caller specifies the "type" of the resource ("typ") and provides a link
+-- to Sputnik config, where the function can lookup URL patterns for different
+-- types. Each URL pattern is assumed to be either a Lua patterns, with a
+-- single "%s" or a function that takes ID as the parameter. The function
+-- substitutes the rewritten id. The function for rewriting IDs is configurable.
+--
 -----------------------------------------------------------------------------
-function photo_url(id, size)
-   local LOCAL_MODE = false
+function photo_url(id, typ, config)
+   typ = typ or "sized"
+   --local LOCAL_MODE = true
    if LOCAL_MODE then 
-      return "http://localhost/image.jpg"
+      return "http://localhost/"..typ..".jpg"
+   end
+   
+   local id_rewriter_fn = config.SFOTO_ID_REWRITER_FN or function(id)
+      local parsed
+      if type(id) == "table" then
+         parsed = id
+      else
+         parsed = parse_id(id)
+      end
+      return parsed.year.."-"..parsed.month.."-"..parsed.date.."-"..parsed.rest
    end
 
-   local parsed
-   if type(id) == "table" then
-      parsed = id
-   else
-      parsed = parse_id(id)
-   end
-   id = parsed.year.."-"..parsed.month.."-"..parsed.date.."-"..parsed.rest
+   id = id_rewriter_fn(id)
 
-   local album_base = "http://media.freewisdom.org/freewisdom/albums/"
-   local full_size_base = "http://media.freewisdom.org/freewisdom/full_size/"
-   if size=="original" then
-      return full_size_base.."/"..id..".JPG"
-   elseif size=="blog_thumb" then
-      return "http://media.freewisdom.org/blog_thumbs/"
-             ..parsed.year.."/"..parsed.month.."/"..parsed.date.."/"..parsed.rest
-             ..".jpg"
-   elseif size=="thumb" then
-      return album_base..id..".thumb.jpg"
-   elseif size=="2x" or size=="3x" or size=="4x" then
-      return album_base.."/oddsize/"..id:match("/([^%/]*)$")..".thumb"..size..".jpg"
+   local url_pattern = config.SFOTO_FILE_URL_PATTERNS[typ]
+   -- return album_base.."/oddsize/"..id:match("/([^%/]*)$")..".thumb"..typ..".jpg"
+   
+   local url
+   if type(url_patter)=="function" then
+      url = url_pattern(id)
+   elseif type(url_pattern)=="string" then
+      url = string.format(url_pattern, id)
    else
-      return album_base.."/"..id..".sized.jpg"
+      error ("URL pattern must be a Lua function or a string.")
    end
+   return url
 end
 
 local MONTH_NAMES = {
@@ -203,12 +226,12 @@ local function decorate_item(item, sputnik, oddeven)
           item.url = sputnik:make_url(item.id)
           item.content_url = sputnik:make_url(item.id, "show_content",
                                               {show_title="1"})
-          item.blog_thumb = photo_url(item.id, "blog_thumb")
+          item.blog_thumb = photo_url(item.id, "blog_thumb", sputnik.config)
       else
           item.url = sputnik:make_url(item.id)
           item.content_url = sputnik:make_url(item.id, "show_content",
                                               {show_title="1"})
-          item.thumbnail = photo_url(item.id.."/"..item.thumb, "thumb")
+          item.thumbnail = photo_url(item.id.."/"..item.thumb, "thumb", sputnik.config)
       end
 
       item.show_date = (cur_date ~= parsed.date) and parsed.date
