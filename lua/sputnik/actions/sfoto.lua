@@ -112,9 +112,11 @@ actions.show_album_content = function(node, request, sputnik, options)
                                                    request.user, sputnik)   
    -- attach URLs to them
    for i, photo in ipairs(photos) do
-      photo.thumb = sfoto.photo_url(node.id.."/"..photo.id, "thumb", sputnik.config)
-      photo.sized = sfoto.photo_url(node.id.."/"..photo.id, "sized", sputnik.config)
-      photo.original = sfoto.photo_url(node.id.."/"..photo.id, "original", sputnik.config)
+      photo.if_video = cosmo.c(photo.is_video){}
+      photo.if_photo = cosmo.c(not photo.is_video){}
+      for _, key in ipairs{"thumb", "video_thumb", "sized", "sized_video_frame", "original", "video_file"} do
+          photo[key] = sfoto.photo_url(node.id.."/"..photo.id, key, sputnik.config)
+      end
    end
    local first_photo_url = ""
    if #photos > 0 then
@@ -285,6 +287,7 @@ actions.show_index = function(node, request, sputnik)
    end
    node:add_javascript_snippet(cosmo.f(javascript.INDEX){})
    node:add_javascript_link(sputnik:make_url("sfoto/dragscrollable.js"))
+   node:add_javascript_link(sputnik.config.MEDIA_PLAYER_JS_URL)
    node:add_css_snippet(cosmo.f(node.templates.CSS_FOR_INDEX){})
    return node.wrappers.default(node, request, sputnik)
 end

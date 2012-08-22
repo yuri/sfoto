@@ -4,6 +4,9 @@ INDEX = [===[
 
 var sfoto = {};
 
+sfoto.flashplayer_url = "http://media.freewisdom.org/jwplayer/player.swf";
+sfoto.player_streamer_url = "rtmp://sdlpzhovxizfl.cloudfront.net/cfx/st";
+
 sfoto.close_viewer = function() {
    $$("#sfoto_popup_scroll_pane").fadeOut(500);
    $$("body").css("overflow", "auto");
@@ -12,15 +15,36 @@ sfoto.close_viewer = function() {
 }
 
 sfoto.advance_to_thumbnail = function(thumbnail) {
-   var id = $$(thumbnail).attr("id").substring(16);
-   var links = {};
-   links.sized_url = $$(thumbnail).attr("data-sized-url");
-   links.full_size_url = $$(thumbnail).attr("data-full-size-url");
-   links.sputnik_node = $$(thumbnail).attr("href");
-   sfoto.advance_to_photo(id, links);
+   if (thumbnail) {
+      var id = $$(thumbnail).attr("id").substring(16);
+      var links = {};
+      links.sized_url = $$(thumbnail).attr("data-sized-url");
+      links.sized_frame_url = $$(thumbnail).attr("data-sized-frame-url");
+      links.full_size_url = $$(thumbnail).attr("data-full-size-url");
+      links.video_file = $$(thumbnail).attr("data-video-file");
+      links.sputnik_node = $$(thumbnail).attr("href");
+      sfoto.advance_to_photo(id, links);
+   }
 }
 
 sfoto.advance_to_photo = function (id, links) {
+   if (links.sized_frame_url) {
+      $$("#sfoto_popup_main_image img").hide();
+      $$("div#mediaplayer_container").show();
+      jwplayer("mediaplayer").setup({
+            flashplayer: sfoto.flashplayer_url,
+            file: links.video_file,               
+            image: links.sized_frame_url,
+            height: 533, width: 800,
+            provider: "rtmp",
+            streamer: sfoto.player_streamer_url
+      });
+   }
+   else {
+      jwplayer("mediaplayer").stop();
+      $$("#sfoto_popup_main_image img").show();
+      $$("div#mediaplayer_container").hide();
+   }
    $$("#sfoto_popup_main_image img").attr("src", links.sized_url);
    $$("#sfoto_viewer_toolbar_permalink").attr("href", links.sputnik_node);
    $$("#sfoto_viewer_toolbar_full_size").attr("href", links.full_size_url);

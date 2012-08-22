@@ -71,7 +71,7 @@ function photo_url(id, typ, config)
    -- return album_base.."/oddsize/"..id:match("/([^%/]*)$")..".thumb"..typ..".jpg"
    
    local url
-   if type(url_patter)=="function" then
+   if type(url_pattern)=="function" then
       url = url_pattern(id)
    elseif type(url_pattern)=="string" then
       url = string.format(url_pattern, id)

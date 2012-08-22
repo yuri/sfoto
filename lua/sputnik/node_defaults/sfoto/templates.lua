@@ -43,6 +43,9 @@ ALBUM_FOR_VIEWER = [======[
    <div id="sfoto_popup_main_image">
     <div id="sfoto_popup_main_image_cell">
      <img src=""/>
+     <div id="mediaplayer_container">
+      <div id="mediaplayer">Video Player Goes Here</div>
+     </div>
     </div>
    </div>
    <div id="sfoto_popup_thumbnail_scroll_pane">
@@ -52,11 +55,24 @@ ALBUM_FOR_VIEWER = [======[
       $rows[=[
       <tr>
        $photos[==[
+        $if_photo[[
         <td class='sfoto_thumbnail_box'>
          <div id="sfoto_thumbnail_$id" data-sized-url="$sized" data-full-size-url="$original" class="sfoto_thumbnail" href="$album_url/$id">
           <img src='$thumb'/>
          </div>
         </td>
+        ]]
+        $if_video[[
+        <td class='sfoto_thumbnail_box sfoto_thumbnail_box_video'>
+         <div id="sfoto_thumbnail_$id" data-sized-frame-url="$sized_video_frame" data-video-file="$video_file" class="sfoto_thumbnail sfoto_video_thumbnail" href="$album_url/$id">
+          <img width="150px" height="100px" src='$video_thumb'/>
+          <div class="sfoto_video_play_icon">
+           <img src="http://media.freewisdom.org/tmp/play.png"/>
+          </div>
+         </div>
+        </td>    
+        ]]
+
        ]==]
       </tr>
       ]=]
@@ -234,6 +250,15 @@ text-align: right;
  vertical-align: middle;
 }
 
+#mediaplayer_container {
+ border-radius: 10px;
+ vertical-align: middle;
+ border: 5px solid gray;
+ width: 805px;
+ margin: 0px auto;
+ display: none;
+}
+
 #sfoto_popup_thumbnail_scroll_pane {
  position: absolute;
  top: 0px;
@@ -284,7 +309,25 @@ td.sfoto_thumbnail_box {
  border: 1px solid gray;
  margin: 2px;
  background: black;
- border-radius: 10px;
+}
+
+td.sfoto_thumbnail_box_video {
+ background: #999 !important;
+}
+
+.sfoto_thumbnail {
+ position: relative;
+}
+
+.sfoto_video_play_icon {
+ position: absolute;
+ top:9px;
+ left: 40px;
+ border: 6px solid black;
+ border-radius: 7px;
+ padding: 5px 10px;
+ opacity: 0.6;
+
 }
 
 .sfoto_thumbnail_box img {
@@ -292,6 +335,10 @@ td.sfoto_thumbnail_box {
 }
 .sfoto_thumbnail_box img.active {
  border: 2px solid yellow;
+}
+
+.sfoto_video_play_icon img {
+ border: none !important;
 }
 
 #sfoto_viewer_toolbar {
