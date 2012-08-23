@@ -90,6 +90,23 @@ sfoto.make_modal_popup = function (album_url) {
             window.open($$(this).attr("href"));
             return false;
          });
+         $$(document).keydown(function(e){
+            var top = $$("#sfoto_popup_thumbnail_scroll_pane").scrollTop();
+            if (e.which == 40) { // down
+               top += 50;
+            }
+            if (e.which == 38) { // up
+               top -= 50;
+            }
+            if (e.which == 34) { // page down
+               top += 500;
+            }
+            if (e.which == 33) { // page up
+               top -= 500;
+            } 
+            $$("#sfoto_popup_thumbnail_scroll_pane").scrollTop(top);
+         });
+         $$
       }
    );
 }
