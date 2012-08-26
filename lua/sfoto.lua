@@ -228,10 +228,23 @@ local function decorate_item(item, sputnik, oddeven)
                                               {show_title="1"})
           item.blog_thumb = photo_url(item.id, "blog_thumb", sputnik.config)
       else
+          local thumb_id = item.thumb
+          local thumb_type = nil
+          for _, v in ipairs(item.content.photos) do
+              if v.id == thumb_id then
+                 if v.is_video then
+                    thumb_type = "video_thumb"
+                 else
+                    thumb_type = "thumb"
+                 end
+                 break
+              end
+          end
           item.url = sputnik:make_url(item.id)
           item.content_url = sputnik:make_url(item.id, "show_content",
                                               {show_title="1"})
-          item.thumbnail = photo_url(item.id.."/"..item.thumb, "thumb", sputnik.config)
+          item.thumbnail = photo_url(item.id.."/"..item.thumb, thumb_type, sputnik.config)
+          item.if_fixed_width = cosmo.c(thumb_type == "video_thumb"){}
       end
 
       item.show_date = (cur_date ~= parsed.date) and parsed.date

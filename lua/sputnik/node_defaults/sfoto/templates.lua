@@ -117,7 +117,7 @@ INDEX = [======[
        </a>
       ]====]
       $if_album[====[
-       <a href="$url" title="$title" class="sfoto_album_link"><img src="$thumbnail"/></a>
+       <a href="$url" title="$title" class="sfoto_album_link"><img src="$thumbnail" $if_fixed_width[[width="150px" height="100px"]]/></a>
        <br/>$title
       ]====]
      </td>
