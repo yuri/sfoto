@@ -215,6 +215,18 @@ local function sort_by_month(items, ascending)
    return months
 end
 
+
+local function pretty_count(count, singular, plural)
+   plural = plural or singular.."s"
+   if count == 0 then
+      return "no "..plural
+   elseif count == 1 then
+      return "1 "..singular
+   else
+      return count.." "..plural
+   end
+end
+
 -----------------------------------------------------------------------------
 --
 -----------------------------------------------------------------------------
@@ -228,6 +240,8 @@ local function decorate_item(item, sputnik, oddeven)
                                               {show_title="1"})
           item.blog_thumb = photo_url(item.id, "blog_thumb", sputnik.config)
       else
+          local num_photos = 0
+          local num_videos = 0
           local thumb_id = item.thumb
           local thumb_type = nil
           for _, v in ipairs(item.content.photos) do
@@ -237,9 +251,15 @@ local function decorate_item(item, sputnik, oddeven)
                  else
                     thumb_type = "thumb"
                  end
-                 break
+              end
+              if v.is_video then
+                 num_videos = num_videos+1
+              else
+                 num_photos = num_photos+1
               end
           end
+          item.count = pretty_count(num_photos, "photo")
+                       .. ", " .. pretty_count(num_videos, "video")          
           item.url = sputnik:make_url(item.id)
           item.content_url = sputnik:make_url(item.id, "show_content",
                                               {show_title="1"})
